@@ -13,7 +13,8 @@ function getMovement(socket) {
 
     socket.on('now', function(jsonStr) {
 
-		// 2018_02_05 
+        // 2018_02_05 
+
 		// 같은 방에 존재하는 유저들에게 본인의 위치 정보를 전송함
 		socket.broadcast.to(room_test).emit('result', jsonStr);
 	});

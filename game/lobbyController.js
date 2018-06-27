@@ -14,7 +14,7 @@ function joinLobby(socket, lobbyStatus, io) {
         
         //로비 유저 배열 생성
         if(typeof lobbyStatus[lobby_test]['users'] === 'undefined') {
-            console.log("유저 배열 생성");
+            console.log("로비 유저 배열 생성");
             lobbyStatus[lobby_test]['users'] = new Array(); 
         }
 
@@ -87,7 +87,6 @@ function exitLobby(socket, lobbyStatus, io){
 function teleport(socket, lobbyStatus, io){
 	socket.on('tpNow', function(data) {
         
-    
         socket.broadcast.to(lobby_test).emit('tpData', data);
     
 	});
@@ -106,29 +105,47 @@ function fishing(socket, lobbyStatus, io){
     socket.on('fishing', function(){
         console.log("낚시 시작");
 
-        setTimeout(getFish, 5000 , lobbyStatus, io);
+		// var fishNum = Math.floor(Math.random() * (7 - 0)) + 0;
+		//시연용
+		var fishNum = 1;
 
+		console.log(fishNum);
+
+		io.to(lobby_test).emit('getFish', fishNum); 	
     });
 }
 
-//낚시 도중 낚시장을 빠져 나갔을 때
-function stopFishing(socket, lobbyStatus, io){
-    socket.on('stopFish',function(){
-        
-        clearTimeout(getFish);
+function getBus(socket, lobbyStatus, io){
+    socket.on('getBus', function(data){
+        console.log("버스 탑승");
+
+		io.to(lobby_test).emit('getBusRes', data); 	
     });
 }
 
+function outBus(socket, lobbyStatus, io){
+    socket.on('outBus', function(data){
+        console.log("버스 오리루");
 
-//낚시 성공 setTime 이벤트
-function getFish(lobbyStatus, io) {
-    console.log('물고기 get');
-    
-    fishNum = Math.floor(Math.random() * (9 - 0)) + 0;
-
-	io.to(room_test).emit('getFish', fishNum); 	
+		io.to(lobby_test).emit('outBusRes', data);
+	});
 }
 
+function moveBus(socket, lobbyStatus, io){
+	socket.on("moveBus", function(data){
+		console.log("버스 움직임");
+
+		io.to(lobby_test).emit('moveBusRes', data);
+	});
+}
+
+function lobbyMove(socket, lobbyStatus, io) {
+    socket.on('lobbyNow', function(jsonStr) {
+
+		// 같은 방에 존재하는 유저들에게 본인의 위치 정보를 전송함
+		socket.broadcast.to(lobby_test).emit('lobbyResult', jsonStr);
+	});
+};
 
 
 exports.joinLobby = joinLobby;
@@ -136,4 +153,7 @@ exports.exitLobby = exitLobby;
 exports.teleport = teleport;   
 exports.setIndex = setIndex;
 exports.fishing = fishing;
-exports.stopFishing = stopFishing;
+exports.getBus = getBus;
+exports.outBus = outBus;
+exports.moveBus = moveBus;
+exports.lobbyMove = lobbyMove;

@@ -1,5 +1,5 @@
 // 캐릭터 랜덤 위치 생성 및 배치, 재배치 관련 함수 파일
-const setPosition = require('./setPosition');
+const setPosition = require('./game/setPosition');
 
 const room_test = 'room1';
 
@@ -30,6 +30,7 @@ function webNpcOut(socket, roomStatus, io) {
 
 function webLightOut(socket, roomStatus, io) {
 	socket.on('webLightOut', function(log) {
+		console.log("신호는 날라옴");
 		if(typeof roomStatus[room_test] === 'undefined') {
 			return;
 		}

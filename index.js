@@ -78,6 +78,10 @@ const playGame = require('./game/playGame');
 // 로비 부분
 const lobbyController = require('./game/lobbyController');
 
+
+// 웹에서 게임을 컨트롤 하기 위한 부분
+const webTestCode = require('./webTestCode');
+
 // 접속해 있는 유저들 정보
 // 키 값으로 유저 아이디가 들어가며, 밸류값으로 소켓 아이디 저장
 // userList['userId'] = socket.id;
@@ -126,15 +130,18 @@ io.sockets.on('connection', function (socket) {
 
 	// 방 입장
 	// socket.on('joinRoom', function(userId)
-	roomController.joinRoom(socket, roomStatus);
+	roomController.joinRoom(socket, roomStatus, io);
 
 	// 방 퇴장
 	// socket.on('exit', function(nick)
-	roomController.exitRoom(socket, roomStatus);
+	roomController.exitRoom(socket, roomStatus, io);
 
 	// 유저 레디 시 ( 레디 체크 )
 	// socket.on('checkReady', function(jsonObj)
 	roomController.userReadyChk(socket, roomStatus);
+
+	// 게임 시작 ver.2
+	roomController.startGame(socket, roomStatus, io);
 
 	
 	/**************************************** serverController ****************************************/
@@ -201,8 +208,19 @@ io.sockets.on('connection', function (socket) {
 	lobbyController.setIndex(socket);
 	//로비에서 낚시를 시작 할 때
 	lobbyController.fishing(socket, lobbyStatus, io);
-	//낚시 도중 낚시장을 빠져나갔을 때
-	lobbyController.stopFishing(socket, lobbyStatus, io);
+	//로비에서 버스탑승 시
+	lobbyController.getBus(socket, lobbyStatus, io);
+	//로비에서 버스 내림
+	lobbyController.outBus(socket, lobbyStatus, io);
+	//로비에서 버스 움직임
+	lobbyController.moveBus(socket, lobbyStatus, io);
+	//로비에서 움직임
+	lobbyController.lobbyMove(socket, lobbyStatus, io);
+
+
+	// 웹에서 게임을 컨트롤 하기위한 부분
+	webTestCode.webNpcOut(socket, roomStatus, io);
+	webTestCode.webLightOut(socket, roomStatus, io);
 });
 
 

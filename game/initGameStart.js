@@ -5,7 +5,7 @@ const setPosition = require('./setPosition');
 
 
 const room_test = 'room1';
-const TOTAL_GAME_TIME = 180; // 게임 총 시간
+const TOTAL_GAME_TIME = 18000; // 게임 총 시간
 const FRONT_SIDE_TIME = 5; // 게임 시작 대기 시간
 const BACK_SIDE_TIME = 30; // 게임 종료 전 진행을 위한 시간
 const PLUS_TIME = 5; // NPC 랜덤 퇴장 + 시간 간격
@@ -237,12 +237,13 @@ function handReadyTime(roomStatus, room_test, io) {
 
 	for( var i = 0 ; i < 5 ; i++){
 		roomStatus[room_test]['timeEvent']['lightTime'][i] =
-			setTimeout(lightTime, lightList[i] * 1000 , roomStatus, io);
+			setTimeout(lightTime, lightList[i] * 5000000 , roomStatus, io);
 	}
 
 	// Recursive function 재귀 함수
 	// npc 나가는 이벤트
-	npcOutSocket(roomStatus, io);
+	// 시연용으로 주석처리 해논거임.
+	//npcOutSocket(roomStatus, io);
 }
 
 // 게임 타이머 함수

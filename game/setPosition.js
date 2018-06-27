@@ -30,7 +30,7 @@ function createRandomPosition() {
 
 	return position;
 };
-
+/*
 // 2018_03_31
 // 게임 시작 시 캐릭터 위치 배치, 및 도중 위치 변경 시 처리하는 함수
 // deeps level 2
@@ -63,7 +63,34 @@ function setRandomPosition(roomStatus, randomPosition) {
 		}
 	}
 }
+*/
 
+// 데모용
+function setRandomPosition(roomStatus, randomPosition) {
+	console.log('setPosition.setRandomPosition function(demo mode) loding'); // debug
+	// 초기 캐릭터 배치 이벤트
+	if( typeof roomStatus[room_test]['characterPosition'] === 'undefined') {
+
+		roomStatus[room_test]['characterPosition'] = new Array();
+
+		var userNum = roomStatus[room_test]['users'].length;
+		var i=0;
+		// user 수만큼 자리 배치를 먼저 한 후
+		roomStatus[room_test]['characterPosition'][0] = 'NPC';
+		roomStatus[room_test]['characterPosition'][1] = 'NPC';
+		roomStatus[room_test]['characterPosition'][2] = 'NPC';
+		roomStatus[room_test]['characterPosition'][3] = roomStatus[room_test]['users'][0][0];
+		roomStatus[room_test]['characterPosition'][4] = 'NPC';
+		roomStatus[room_test]['characterPosition'][5] = 'NPC';
+		roomStatus[room_test]['characterPosition'][6] = 'NPC';
+		roomStatus[room_test]['characterPosition'][7] = roomStatus[room_test]['users'][1][0];
+		
+
+	// 이미 배치 된 상태를 바꾸는 형태
+	} else {
+	}
+
+}
 
 exports.createRandomPosition = createRandomPosition;
 exports.setRandomPosition = setRandomPosition;

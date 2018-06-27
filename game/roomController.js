@@ -26,9 +26,9 @@ function createRoom(socket, roomStatus) {
 // 유저별 room 젒속
 // 추후에 처리해야함. 현재는 테스트 상 임시로 room1 로 통일
 // deeps level 1
-function joinRoom(socket, roomStatus) {
+function joinRoom(socket, roomStatus, io) {
 //	socket.on('joinRoom', function(roomName, userId) {
-	socket.on('joinRoom', function(userId) {
+	socket.on('join', function(userId) {
 		console.log('roomController.joinRoom function (joinRoom) socketEventt on'); // debug
 		
 		// 현재 소켓(클라이언트)이 접속해 있는 방이 있을 경우
@@ -70,6 +70,7 @@ function joinRoom(socket, roomStatus) {
 		// 테스트용 코드
 		// 방에 입장 시 새로운 방 생성  및 유저의 정보를 방 정보에 삽입
 		if(typeof roomStatus[room_test]['users'] === 'undefined') {
+			console.log("라스트 원 체어 유저 배열 생성");
 			roomStatus[room_test]['users'] = new Array(); // 이 코드는 현재 테스트 용으로 실제 createRoom이 동작시 필요 없어짐.
 		}
 		if(typeof roomStatus[room_test]['timeEvent'] === 'undefined'){
@@ -85,16 +86,19 @@ function joinRoom(socket, roomStatus) {
 		roomStatus[room_test]['users'][userCnt][0] = userId;
 		roomStatus[room_test]['users'][userCnt][1] = 'notReady';
 
+
 		// 방에 입장 시 방 안에 존재하는 사람들에게 현재 입장한 유저의 아이디를 전송
-		socket.broadcast.to(room_test).emit('joinUser', userId);
+		//socket.broadcast.to(room_test).emit('joinUser', userId);
 
 		// 방금 입장한 사람에게 방 안에 존재하는 사람들의 아이디를 보내줌
 		var roomUserList = new Array();
-		for (var i = 0; i < userCnt; i++) {
+		for (var i = 0; i <= userCnt; i++) {
 			roomUserList[i] = roomStatus[room_test]['users'][i][0];
 		}
 
-		socket.emit('roomUser', roomUserList);
+		console.log('유저배열 전송'+roomUserList[0]);
+		io.to(room_test).emit('userIndex', roomUserList);
+		
 
 		// console.log('user is join the ' + room_test + ' userId = ' + userId);
 	});
@@ -171,11 +175,13 @@ function allReady(roomStatus) {
 // 2018_02_20
 // 유저가 방 나가기를 눌렀을때 방퇴장 처리
 // deeps level 1
-function exitRoom(socket, roomStatus){
+function exitRoom(socket, roomStatus, io){
 	//유저id받아옴
-	socket.on('exitRoom', function(nick) {
+	socket.on('exit', function(nick) {
 		console.log('게임 퇴장 함수 실행');
-		if(typeof roomStatus[room_test]['users'] !== 'undefined') {
+		if(typeof roomStatus[room_test] === 'undefined') {
+
+		}else{
 			var userCnt = roomStatus[room_test]['users'].length;
 			var userId  = nick;
 
@@ -187,7 +193,24 @@ function exitRoom(socket, roomStatus){
 					
 					roomStatus[room_test]['users'].splice(i,1);
 					
-					socket.broadcast.to(room_test).emit('exitUser', userId);
+					var roomUserList = new Array();
+
+
+
+					var nowUserCnt = roomStatus[room_test]['users'].length;
+
+					if(nowUserCnt == 0){
+
+						roomUserList[0] = "0";
+
+					}else{	
+						for (var i = 0; i <= nowUserCnt; i++) {
+							roomUserList[i] = roomStatus[room_test]['users'][i][0];
+						}
+					}
+
+
+					io.to(room_test).emit('userIndex', roomUserList);
 
 					if(roomStatus[room_test]['users'].length  <= 1 && roomStatus[room_test]['gameStatus'] != 'robie') {
 						io.to(room_test).emit('endGame', 'endGame');    
@@ -203,9 +226,30 @@ function exitRoom(socket, roomStatus){
 	});
 }
 
+function startGame(socket, roomStatus, io) {
+	socket.on('start', function() {
+		
+		console.log('게임 시작');
+
+		if(typeof roomStatus[room_test] === 'undefined') {
+			
+		}else{
+			var userCnt = roomStatus[room_test]['users'].length;
+
+			var roomUserList = new Array();
+			for (var i = 0; i < userCnt; i++) {
+				roomUserList[i] = roomStatus[room_test]['users'][i][0];
+			}
+		}
+
+
+        io.to(room_test).emit('startGame', roomUserList);
+	});
+};
 
 exports.createRoom = createRoom;
 exports.joinRoom = joinRoom;
 exports.userReadyChk = userReadyChk;
 exports.exitRoom = exitRoom;
+exports.startGame = startGame;
 
